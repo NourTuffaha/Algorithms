@@ -6,14 +6,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class HuffmanMenuController implements Initializable {
@@ -21,6 +28,10 @@ public class HuffmanMenuController implements Initializable {
     /**
      * This list will store all objects of row type to fill tableView
      */
+
+    private Stage stage;
+    private Scene scene;
+    private Parent root;
     private ObservableList<Row> listView;
 
     @FXML
@@ -38,8 +49,6 @@ public class HuffmanMenuController implements Initializable {
     @FXML
     private Label sourceFileInformation;
 
-    @FXML
-    private Label codedFileInformation;
 
     @FXML
     private TableView<Row> huffmanTable;
@@ -69,7 +78,6 @@ public class HuffmanMenuController implements Initializable {
 
     private File destination;
 
-    private ToggleGroup radioButtons = new ToggleGroup();
 
     private Compression compression;
 
@@ -153,30 +161,16 @@ public class HuffmanMenuController implements Initializable {
      * This method will compress or decompress a choosen file , Depends of radio
      * button that selected
      */
-    @FXML
-    void compressOrDecompressAction(ActionEvent event) {
-        try {
-            if (radioButtons.getSelectedToggle() == this.encodingRadioButton)  // Compress a source File
-                encode();
-
-            else if (radioButtons.getSelectedToggle() == this.decodingRadioButton) // Decompress a source File
-                decode();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-        }
-
-    }
 
 
     @FXML
-    void compress(ActionEvent event){
+    void compress(ActionEvent event) {
         encode();
 
     }
 
     @FXML
-    void decompress(ActionEvent event){
+    void decompress(ActionEvent event) {
         decode();
 
     }
@@ -197,39 +191,34 @@ public class HuffmanMenuController implements Initializable {
 
     // This method will clear all input data
     @FXML
-    void clear1(ActionEvent event) {
+    void clearEncodeMenu(ActionEvent event) {
 
         this.source = null;
         this.sourceFileInformation.setText("");
-        this.codedFileInformation.setText("");
         this.sourceFilePath.clear();
         this.listView.clear();
     }
 
     @FXML
-    void clear2(ActionEvent event) {
+    void clearDecodeMenu(ActionEvent event) {
 
         this.destination = null;
-        this.codedFileInformation.setText("");
         this.destinationFilePath.clear();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-     // This method will invoke to compress chosen source File
+    // This method will invoke to compress chosen source File
     private void encode() {
 
         if (source != null) {
 
-            /*
-             * Get source File to Compress it with compressed file with the same name and
-             * .huff extension and in the same directory
-             */
-            String pathWExtension = source.getParent() + "\\" + source.getName();
-            int dotIndex = pathWExtension.lastIndexOf('.');
-            String pathNoExtension = pathWExtension.substring(0, dotIndex);
-            File dest = new File(pathNoExtension + ".rar");
+
+            String fullPath = source.getParent() + "\\" + source.getName();
+            int dotIndex = fullPath.lastIndexOf('.');
+            String shortPath = fullPath.substring(0, dotIndex);
+            File dest = new File(shortPath + ".rar");
 
             // Start The compression Process
             compression = new Compression();
@@ -255,9 +244,7 @@ public class HuffmanMenuController implements Initializable {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * This method will invoke to decompress Destination File that will be choosen
-     */
+
     private void decode() {
 
         if (destination != null) {
@@ -266,15 +253,14 @@ public class HuffmanMenuController implements Initializable {
             decompressTools = new Decompression(destination);
 
             /*
-             * Get source File to Compress it with compressed file with the same name and
-             * original extension and in the same directory
+             Save decoded file in the same directory but w/ original extension
              */
             String pathWithExtension = destination.getParent() + "\\" + destination.getName();
             int indexOfDotExtension = pathWithExtension.lastIndexOf('.');
             String pathWithOutExtension = pathWithExtension.substring(0, indexOfDotExtension);
             File initial = new File(pathWithOutExtension + decompressTools.getExtensionOfOriginalFile());
 
-            // This is a trivial solution for a rename problem
+            // In case a file with the same name+extension exists =>
             if (initial.exists()) {
                 initial = new File(pathWithOutExtension + "2" + decompressTools.getExtensionOfOriginalFile());
             }
@@ -299,6 +285,7 @@ public class HuffmanMenuController implements Initializable {
         }
     }
 
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -318,7 +305,13 @@ public class HuffmanMenuController implements Initializable {
 
     }
 
-
+    public void switchBackToMainMenu(ActionEvent event) throws IOException {
+        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("MainMenu/MainMenu.fxml")));
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

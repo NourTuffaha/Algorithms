@@ -33,7 +33,7 @@ public class Decompression {
 
 	private String extensionOfOriginalFile = new String("");
 
-	private File compressedFile;
+	private  File compressedFile;
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public Decompression(File compressedFile) {
@@ -56,10 +56,10 @@ public class Decompression {
 
 	/**
 	 * 1st Step of Decompression Process
-	 * 
+	 *
 	 * This method is used to decompress Header of a file to its original form as
 	 * huffman tree to use it to encoding a compressed file
-	 * 
+	 *
 	 * @param compressedFile
 	 * @return Original module.huffmandemo.Huffman tree
 	 */
@@ -107,17 +107,17 @@ public class Decompression {
 
 	}*/
 
-	
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * 1st Step of Decompression Process
-	 * 
+	 *
 	 * This method is used to decompress Header of a file to its original form as
 	 * huffman tree to use it to encoding a compressed file
-	 * 
+	 *
 	 * @return Original module.huffmandemo.Huffman tree
 	 */
 	private HuffNode decodingHeader() {
@@ -132,10 +132,10 @@ public class Decompression {
 	 * This method is consider to be part of 1st step of decompressed a file.
 	 * 0:internal leaf , so we need to read a left and a right node 1:leaf node , so
 	 * we need to read a character
-	 * 
+	 *
 	 * @return node either internal or leaf for each invoking and the last invoking
 	 *         will be a root of a huffman tree.
-	 * 
+	 *
 	 */
 	private HuffNode decodingHelper() {
 
@@ -165,7 +165,7 @@ public class Decompression {
 	/**
 	 * This method is used to decompress an encoded message to its original form
 	 * using a huffman tree and print it on new File.
-	 * 
+	 *
 	 * @param huffmanTree
 	 * @param DecompressedFile
 	 */
@@ -217,9 +217,9 @@ public class Decompression {
 	/**
 	 * This method is used to decompress A compressed file to its original form in
 	 * new File
-	 * 
+	 *
 	 * @param newFile
-	 * 
+	 *
 	 */
 	public void decompres(File newFile) {
 
@@ -240,11 +240,11 @@ public class Decompression {
 	 * data structure contains all of the module.huffmandemo.Huffman codes you will need to compress
 	 * the body of the file. Rather than querying the tree and extracting a code for
 	 * every character in the file.
-	 * 
+	 *
 	 * @param root         : module.huffmandemo.Huffman tree .
 	 * @param table        : Table that represent a codepoint of character and its
 	 *                     huffman code.
-	 * 
+	 *
 	 */
 	private void taversal(HuffNode root, String huffmanCode, HashMap<Integer, String> table) {
 
@@ -269,11 +269,11 @@ public class Decompression {
 	/**
 	 * This method will create a huffman table depends on module.huffmandemo.Huffman tree that create
 	 * in second step of compressed process and using a recursive method/travesal
-	 * 
+	 *
 	 * @param root : module.huffmandemo.Huffman tree
-	 * 
+	 *
 	 * @return a huffman table as HashMap data structure
-	 * 
+	 *
 	 */
 	private HashMap<Integer, String> buildTable(HuffNode root) {
 
@@ -299,9 +299,9 @@ public class Decompression {
 	/**
 	 * This method is used to fill ArrayList Object that will be used to fill
 	 * TableBiew In GUI .
-	 * 
+	 *
 	 * @param table module.huffmandemo.Huffman Table
-	 * 
+	 *
 	 */
 	private void fillArrayList(HashMap<Integer, String> table) {
 

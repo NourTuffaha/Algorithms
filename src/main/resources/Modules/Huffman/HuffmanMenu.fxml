@@ -42,7 +42,12 @@
                      </font>
                   </Button>
                   <TextField fx:id="sourceFilePath" layoutX="11.0" layoutY="154.0" prefHeight="25.0" prefWidth="244.0" promptText="Source File Path" style="-fx-border-color: linear-gradient(to bottom right, #FF7B74, #5A6776); -fx-border-width: 2;" />
-                  <Button layoutX="242.0" layoutY="386.0" mnemonicParsing="false" onAction="#clear1" prefHeight="9.0" prefWidth="98.0" style="-fx-background-color: linear-gradient(to bottom right, #5A6776, #5A6776);" text="Clear" textFill="WHITE">
+                  <Button layoutX="242.0" layoutY="386.0" mnemonicParsing="false" onAction="#clearEncodeMenu" prefHeight="9.0" prefWidth="98.0" style="-fx-background-color: linear-gradient(to bottom right, #5A6776, #5A6776);" text="Clear" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button layoutX="23.0" layoutY="39.0" mnemonicParsing="false" onAction="#switchBackToMainMenu" prefHeight="29.0" prefWidth="110.0" style="-fx-background-color: linear-gradient(to bottom right, #5A6776, #5A6776);" text="Back" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -78,7 +83,12 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button layoutX="28.0" layoutY="355.0" mnemonicParsing="false" onAction="#clear2" prefHeight="30.0" prefWidth="104.0" style="-fx-background-color: linear-gradient(to bottom right, #5A6776, #5A6776);" text="Clear" textFill="WHITE">
+                  <Button layoutX="28.0" layoutY="355.0" mnemonicParsing="false" onAction="#clearDecodeMenu" prefHeight="30.0" prefWidth="104.0" style="-fx-background-color: linear-gradient(to bottom right, #5A6776, #5A6776);" text="Clear" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button layoutX="25.0" layoutY="39.0" mnemonicParsing="false" onAction="#switchBackToMainMenu" prefHeight="29.0" prefWidth="110.0" style="-fx-background-color: linear-gradient(to bottom right, #5A6776, #5A6776);" text="Back" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
