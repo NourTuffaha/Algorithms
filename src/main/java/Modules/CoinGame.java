@@ -27,8 +27,7 @@ public class CoinGame  {
 
         // Fill table using above recursive formula.
         // Note that the table is filled in diagonal
-        // fashion (similar to http:// goo.gl/PQqoS),
-        // from diagonal elements to table[0][n-1]
+        // fashion from diagonal elements to table[0][n-1]
         // which is the result.
         for (gap = 0; gap < n; ++gap) {
             for (i = 0, j = gap; j < n; ++i, ++j) {
