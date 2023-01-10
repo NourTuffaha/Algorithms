@@ -1,0 +1,15 @@
+.anchor {
+    -fx-background-image:url("MainMenu.jpg");
+    -fx-background-position: center center;
+}
+.button{
+    -fx-background-color: black;
+    -fx-border-color: white;
+    -fx-text-fill: white;
+}
+
+.exit_button{
+    -fx-background-color: black;
+    -fx-border-color: white;
+    -fx-text-fill: red;
+}
