@@ -102,10 +102,10 @@
                <children>
                   <TableView fx:id="huffmanTable" layoutX="21.0" layoutY="24.0" prefHeight="400.0" prefWidth="326.0" style="-fx-border-color: linear-gradient(to bottom right, #268AB2, #C7B3CC);">
                      <columns>
-                        <TableColumn fx:id="characterColumn" prefWidth="59.0" text="Character" />
-                        <TableColumn fx:id="huffmanCodeColumn" prefWidth="62.0" text="Code" />
-                        <TableColumn fx:id="lengthColumn" prefWidth="67.0" text="Length" />
-                        <TableColumn fx:id="frequencyColumn" prefWidth="137.0" text="Frequency" />
+                        <TableColumn fx:id="charCol" prefWidth="59.0" text="Character" />
+                        <TableColumn fx:id="huffCodeCol" prefWidth="62.0" text="Code" />
+                        <TableColumn fx:id="lengthCol" prefWidth="67.0" text="Length" />
+                        <TableColumn fx:id="frequencyCol" prefWidth="137.0" text="Frequency" />
                      </columns>
                   </TableView>
                </children>

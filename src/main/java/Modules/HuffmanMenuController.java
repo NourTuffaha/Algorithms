@@ -54,16 +54,16 @@ public class HuffmanMenuController implements Initializable {
     private TableView<Row> huffmanTable;
 
     @FXML
-    private TableColumn<Row, Character> characterColumn;
+    private TableColumn<Row, Character> charCol;
 
     @FXML
-    private TableColumn<Row, String> huffmanCodeColumn;
+    private TableColumn<Row, String> huffCodeCol;
 
     @FXML
-    private TableColumn<Row, Integer> lengthColumn;
+    private TableColumn<Row, Integer> lengthCol;
 
     @FXML
-    private TableColumn<Row, Integer> frequencyColumn;
+    private TableColumn<Row, Integer> frequencyCol;
 
     @FXML
     private TextArea encodedOfHeader;
@@ -84,8 +84,7 @@ public class HuffmanMenuController implements Initializable {
     private Decompression decompressTools;
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     /**
      * This method will be used to initialize and setup some data fields
@@ -97,19 +96,17 @@ public class HuffmanMenuController implements Initializable {
          * Adding radio Buttons to One Group , so You can choose one radio button at a
          * time
          */
-//        encodingRadioButton.setToggleGroup(radioButtons);
-//        decodingRadioButton.setToggleGroup(radioButtons);
+
 
         // Set Columns and add them to tableView
-        characterColumn.setCellValueFactory(new PropertyValueFactory<Row, Character>("character"));
-        huffmanCodeColumn.setCellValueFactory(new PropertyValueFactory<Row, String>("huffmanCode"));
-        lengthColumn.setCellValueFactory(new PropertyValueFactory<Row, Integer>("length"));
-        frequencyColumn.setCellValueFactory(new PropertyValueFactory<Row, Integer>("frequency"));
+        charCol.setCellValueFactory(new PropertyValueFactory<Row, Character>("character"));
+        huffCodeCol.setCellValueFactory(new PropertyValueFactory<Row, String>("huffmanCode"));
+        lengthCol.setCellValueFactory(new PropertyValueFactory<Row, Integer>("length"));
+        frequencyCol.setCellValueFactory(new PropertyValueFactory<Row, Integer>("frequency"));
 
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     /**
      * This method will be used to choose a file to be decompressed
@@ -131,8 +128,7 @@ public class HuffmanMenuController implements Initializable {
 
     }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     /**
      * This method will be used to choose a file to be compressed
@@ -154,8 +150,6 @@ public class HuffmanMenuController implements Initializable {
 
     }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * This method will compress or decompress a choosen file , Depends of radio
@@ -175,9 +169,6 @@ public class HuffmanMenuController implements Initializable {
 
     }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     // This method will close
     @FXML
     void cancel(ActionEvent event) {
@@ -186,8 +177,6 @@ public class HuffmanMenuController implements Initializable {
 
     }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // This method will clear all input data
     @FXML
@@ -206,8 +195,6 @@ public class HuffmanMenuController implements Initializable {
         this.destinationFilePath.clear();
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // This method will invoke to compress chosen source File
     private void encode() {
@@ -228,7 +215,7 @@ public class HuffmanMenuController implements Initializable {
 
             displayEncodingInfo();
 
-            listView = FXCollections.observableArrayList(compression.getRows());
+            listView = FXCollections.observableArrayList(compression.getData());
             huffmanTable.setItems(listView);
 
 
@@ -241,8 +228,6 @@ public class HuffmanMenuController implements Initializable {
 
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     private void decode() {
@@ -266,9 +251,8 @@ public class HuffmanMenuController implements Initializable {
             }
 
             // Start The Decompression Process
-            decompressTools.decompres(initial);
+            decompressTools.decompress(initial);
 
-//            printDestinationInformation();
 
             displayDecodingInfo();
 
@@ -286,12 +270,10 @@ public class HuffmanMenuController implements Initializable {
     }
 
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private void displayEncodingInfo() {
 
-        this.numberOfCharacterInOriginalFile.setText(compression.getCountNumberOfCharInOriginalFile() + "");
+        this.numberOfCharacterInOriginalFile.setText(compression.getCharNum() + "");
         this.extensionOfOriginalFile.setText(compression.getExtension());
         this.encodedOfHeader.setText(compression.getEncodedOfHeader().toString());
 
@@ -312,71 +294,6 @@ public class HuffmanMenuController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * This Method will print source file information on GUI
-     */
-//    private void printSourceInformation() {
-//
-//        // Fill Information about source file in GUI
-//        String sourceInformation = "File Length :\t" + compression.getCountNumberOfCharInOriginalFile() + "\n\n"
-//                + "# of Distinguished Characters:  " + compression.getCountDistinct();
-//        this.sourceFileInformation.setText(sourceInformation);
-//
-//        // Fill Information about Destination/compressed file in GUI
-//        int NumberOfCharInHeader = compression.getCountNumberOfCharInHeader() / 8;
-//        if (NumberOfCharInHeader % 8 > 0) {
-//            NumberOfCharInHeader++;
-//        }
-//        int NumberOfCharInEncodedMessage = compression.getNumberOfCharInEncodedMessage();
-//
-//        float ratioOfCompression = ((1 - (float) (NumberOfCharInHeader + NumberOfCharInEncodedMessage)
-//                / compression.getCountNumberOfCharInOriginalFile()) * 100);
-//
-//        ratioOfCompression = (int) (ratioOfCompression * 100) / 100f;
-//
-//        String DestinationInformation = "File Head Length :\t" + NumberOfCharInHeader + "\n\n" + "Actual Data length:\t"
-//                + NumberOfCharInEncodedMessage + "\n\nCompression Rate:\t\t" + ratioOfCompression + " %";
-//
-//        this.codedFileInformation.setText(DestinationInformation);
-//    }
-//
-//    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//    /**
-//     * This Method will print destination file information on GUI
-//     */
-//    private void printDestinationInformation() {
-//
-//        // Fill Information about source file in GUI
-//        String sourceInformation = "File Length :\t" + decompressTools.getNumberOfCharInOriginalFile() + "\n\n"
-//                + "# of Distinguished Characters:  " + decompressTools.getCountDistinctInOriginal();
-//        this.sourceFileInformation.setText(sourceInformation);
-//
-//        // Fill Information about Destination/compressed file in GUI
-//        int NumberOfCharInHeader = decompressTools.getCountHeader() / 8;
-//        if (NumberOfCharInHeader % 8 > 0) {
-//            NumberOfCharInHeader++;
-//        }
-//        int NumberOfCharInEncodedMessage = decompressTools.getCountCharInCompressedFile();
-//
-//        float ratioOfCompression = ((1 - (float) (NumberOfCharInHeader + NumberOfCharInEncodedMessage)
-//                / decompressTools.getNumberOfCharInOriginalFile()) * 100);
-//
-//        ratioOfCompression = (int) (ratioOfCompression * 100) / 100f;
-//
-//        String DestinationInformation = "File Head Length :\t" + NumberOfCharInHeader + "\n\n" + "Actual Data length:\t"
-//                + NumberOfCharInEncodedMessage + "\n\nCompression Rate:\t\t" + ratioOfCompression + " %";
-//
-//        this.codedFileInformation.setText(DestinationInformation);
-//
-//    }
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 }

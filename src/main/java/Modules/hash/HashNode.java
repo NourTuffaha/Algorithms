@@ -1,11 +1,5 @@
 package Modules.hash;
 
-/**
- * The Class will be used to make the module.huffmandemo.hash table array
- * It is contains data and status as Data field
- *
- */
-
 public class HashNode<K,V> {
 
 	private K key ;

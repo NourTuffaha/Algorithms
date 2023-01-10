@@ -11,335 +11,210 @@ import java.util.ArrayList;
 
 public class Decompression {
 
-	/** in : used to read from a file as bytes */
-	private BitInputStream in;
+    /**
+     * in : used to read from a file as bytes
+     */
+    private BitInputStream in;
 
-	/** out : is used to write on a file as bytes */
-	private BitOutputStream out;
+    /**
+     * out : is used to write on a file as bytes
+     */
+    private BitOutputStream out;
 
-	private int numberOfCharInOriginalFile;
+    private int numberOfCharInOriginalFile;
 
-	private int countDistinctInOriginal;
+    private int countDistinctInOriginal;
 
-	private int countHeader;
+    private int countHeader;
 
-	private int countCharInCompressedFile;
+    private int countCharInCompressedFile;
 
-	private int[] count = new int[256];
+    private int[] count = new int[256];
 
-	private StringBuilder encodedOfHeader = new StringBuilder();
+    private StringBuilder encodedOfHeader = new StringBuilder();
 
-	private ArrayList<Row> rows = new ArrayList<Row>();
+    private ArrayList<Row> rows = new ArrayList<Row>();
 
-	private String extensionOfOriginalFile = new String("");
+    private String extensionOfOriginalFile = new String("");
 
-	private  File compressedFile;
-	///////////////////////////////////////////////////////////////////////////////////////////////////////
+    private final File compressedFile;
 
-	public Decompression(File compressedFile) {
+    public Decompression(File compressedFile) {
 
-		this.compressedFile = compressedFile;
-		in = new BitInputStream(compressedFile);
-		numberOfCharInOriginalFile = in.readBits(32);
+        this.compressedFile = compressedFile;
+        in = new BitInputStream(compressedFile);
+        numberOfCharInOriginalFile = in.readBits(32);
 
-		int numberOfExtensionCharacters = in.readBits(8);
+        int numberOfExtensionCharacters = in.readBits(8);
 
-		for (int i = 0; i < numberOfExtensionCharacters; i++) {
+        for (int i = 0; i < numberOfExtensionCharacters; i++) {
 
-			char character = (char) in.readBits(8);
-			this.extensionOfOriginalFile += character;
-		}
+            char character = (char) in.readBits(8);
+            this.extensionOfOriginalFile += character;
+        }
 
-	}
+    }
 
-	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	/**
-	 * 1st Step of Decompression Process
-	 *
-	 * This method is used to decompress Header of a file to its original form as
-	 * huffman tree to use it to encoding a compressed file
-	 *
-	 * @param compressedFile
-	 * @return Original module.huffmandemo.Huffman tree
-	 */
-	/*private Node decodingHeader() {
-		
-		Stack<Node> treeBuilder = new Stack<Node>();
+    public void decompress(File newFile) {
 
-		for (;;) {
+        HuffNode huffmanTree = decodingHeader();
+        decompressMessage(huffmanTree, newFile);
+        buildTable(huffmanTree);
+        out.flush();
+        out.close();
+        in.close();
 
-			int bit = in.readBits(1);
-			if (bit == 0) {
+    }
 
-				encodedOfHeader.append('0');
 
-				countHeader++;
+    private HuffNode decodingHeader() {
 
-				if (treeBuilder.size() == 1) {
 
-					return treeBuilder.pop();
+        return decodingHelper();
 
-				} else {
 
-					Node right = treeBuilder.pop();
-					Node left = treeBuilder.pop();
-					Node newNode = new Node(256, 0, left, right);
-					treeBuilder.push(newNode);
+    }
 
-				}
 
-			} else {
+    private HuffNode decodingHelper() {
 
-				countHeader += 2;
+        int bit = in.readBits(1);
 
-				int character = in.readBits(8);
+        if (bit == 0) {
 
-				encodedOfHeader.append('1');
-				encodedOfHeader.append((char) character);
+            countHeader++;
+            HuffNode internalNode = new HuffNode(256, 0, null, null);
+            internalNode.setLeft(decodingHelper());
+            internalNode.setRight(decodingHelper());
+            return internalNode;
 
-				Node node = new Node(character, 0, null, null);
-				treeBuilder.push(node);
+        } else {
 
-			}
+            countHeader += 9;
+            int character = in.readBits(8);
+            return new HuffNode(character, 0, null, null);
 
-		}
+        }
 
-	}*/
+    }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+    private void decompressMessage(HuffNode huffmanTree, File DecompressedFile) {
 
-	///////////////////////////////////////////////////////////////////////////////////////////////////////
+        HuffNode current = huffmanTree;
+        int bit = 0;
+        out = new BitOutputStream(DecompressedFile);
 
-	/**
-	 * 1st Step of Decompression Process
-	 *
-	 * This method is used to decompress Header of a file to its original form as
-	 * huffman tree to use it to encoding a compressed file
-	 *
-	 * @return Original module.huffmandemo.Huffman tree
-	 */
-	private HuffNode decodingHeader() {
+        int numberOfCharInOriginalFileTemp = this.numberOfCharInOriginalFile;
+        int countNumberOfBits = 0;
 
+        while (numberOfCharInOriginalFileTemp != 0) {
 
-			return decodingHelper();
+            bit = in.readBits(1);
 
+            countNumberOfBits++;
 
-	}
+            current = (bit != 0) ? current.getRight() : current.getLeft();
 
-	/**
-	 * This method is consider to be part of 1st step of decompressed a file.
-	 * 0:internal leaf , so we need to read a left and a right node 1:leaf node , so
-	 * we need to read a character
-	 *
-	 * @return node either internal or leaf for each invoking and the last invoking
-	 *         will be a root of a huffman tree.
-	 *
-	 */
-	private HuffNode decodingHelper() {
+            if (current.isLeaf()) {
 
-		int bit = in.readBits(1);
+                int codePoint = current.getCharacter();
+                out.writeBits(8, codePoint);
+                current = huffmanTree;
+                numberOfCharInOriginalFileTemp--;
 
-		if (bit == 0) {
+                count[codePoint]++;
+                if (count[codePoint] == 1) {
 
-			countHeader++;
-			HuffNode internalNode = new HuffNode(256, 0, null, null);
-			internalNode.setLeft(decodingHelper());
-			internalNode.setRight(decodingHelper());
-			return internalNode;
+                    countDistinctInOriginal++;
+                }
+            }
 
-		} else {
+        }
 
-			countHeader+=9;
-			int character = in.readBits(8);
-			HuffNode leaf = new HuffNode(character, 0, null, null);
-			return leaf;
+        this.countCharInCompressedFile = (countNumberOfBits / 8);
 
-		}
+        if (countNumberOfBits % 8 > 0) {
 
-	}
+            this.countCharInCompressedFile++;
+        }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+    }
 
-	/**
-	 * This method is used to decompress an encoded message to its original form
-	 * using a huffman tree and print it on new File.
-	 *
-	 * @param huffmanTree
-	 * @param DecompressedFile
-	 */
-	private void decompressMessage(HuffNode huffmanTree, File DecompressedFile) {
 
-		HuffNode current = huffmanTree;
-		int bit = 0;
-		out = new BitOutputStream(DecompressedFile);
+    private void taversal(HuffNode root, String huffmanCode, HashMap<Integer, String> table) {
 
-		int numberOfCharInOriginalFileTemp = this.numberOfCharInOriginalFile;
-		int countNumberOfBits = 0;
+        if (root != null) {
 
-		while (numberOfCharInOriginalFileTemp != 0) {
+            taversal(root.getLeft(), huffmanCode + "0", table);
 
-			bit = in.readBits(1);
+            if (root.isLeaf()) {
 
-			countNumberOfBits++;
 
-			current = (bit != 0) ? current.getRight() : current.getLeft();
+                table.put(root.getCharacter(), huffmanCode);
 
-			if (current.isLeaf()) {
+            }
 
-				int codePoint = current.getCharacter();
-				out.writeBits(8, codePoint);
-				current = huffmanTree;
-				numberOfCharInOriginalFileTemp--;
+            taversal(root.getRight(), huffmanCode + "1", table);
 
-				count[codePoint]++;
-				if (count[codePoint] == 1) {
+        }
 
-					countDistinctInOriginal++;
-				}
-			}
+    }
 
-		}
+    private void buildTable(HuffNode root) {
 
-		// #bytes or a character of a message in compressed file
-		this.countCharInCompressedFile = (countNumberOfBits / 8);
+        HashMap<Integer, String> table = new HashMap<>(countDistinctInOriginal);
 
-		if (countNumberOfBits % 8 > 0) {
+        if (countDistinctInOriginal != 1) {
 
-			this.countCharInCompressedFile++;
-		}
+            taversal(root, "", table);
 
-	}
+        } else {
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+            table.put(root.getCharacter(), "0");
+        }
 
-	/**
-	 * This method is used to decompress A compressed file to its original form in
-	 * new File
-	 *
-	 * @param newFile
-	 *
-	 */
-	public void decompres(File newFile) {
+        fillArrayList(table);
 
-		HuffNode huffmanTree = decodingHeader();// 1st
-		decompressMessage(huffmanTree, newFile);// 2nd
-		buildTable(huffmanTree);
-		out.flush();
-		out.close();
-		in.close();
+    }
 
-	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
+    private void fillArrayList(HashMap<Integer, String> table) {
 
-	/**
-	 * 3rd step of module.huffmandemo.Huffman compression Process These two method is used to read a
-	 * module.huffmandemo.Huffman tree in the form of a single HuffNode to build a table Using HashMap
-	 * data structure contains all of the module.huffmandemo.Huffman codes you will need to compress
-	 * the body of the file. Rather than querying the tree and extracting a code for
-	 * every character in the file.
-	 *
-	 * @param root         : module.huffmandemo.Huffman tree .
-	 * @param table        : Table that represent a codepoint of character and its
-	 *                     huffman code.
-	 *
-	 */
-	private void taversal(HuffNode root, String huffmanCode, HashMap<Integer, String> table) {
+        HashNode<Integer, String>[] tableTemp = table.getHashTable();
 
-		if (root != null) {
+        for (int i = 0; i < table.sizeOfData(); i++) {
 
-			taversal(root.getLeft(), huffmanCode + "0", table);
+            Character character = (char) tableTemp[i].getKey().intValue();
+            String code = tableTemp[i].getValue();
+            Integer length = code.length();
+            Integer frequency = count[tableTemp[i].getKey()];
 
-			if (root.isLeaf()) {
+            Row row = new Row(character, code, length, frequency);
 
-				// When it reach a leaf it will read a code point and put it in a table.
+            rows.add(row);
 
-				table.put(root.getCharacter(), huffmanCode);
+        }
 
-			}
+    }
 
-			taversal(root.getRight(), huffmanCode + "1", table);
 
-		}
+    public int getNumberOfCharInOriginalFile() {
+        return numberOfCharInOriginalFile;
+    }
 
-	}
 
-	/**
-	 * This method will create a huffman table depends on module.huffmandemo.Huffman tree that create
-	 * in second step of compressed process and using a recursive method/travesal
-	 *
-	 * @param root : module.huffmandemo.Huffman tree
-	 *
-	 * @return a huffman table as HashMap data structure
-	 *
-	 */
-	private HashMap<Integer, String> buildTable(HuffNode root) {
+    public StringBuilder getEncodedOfHeader() {
+        return encodedOfHeader;
+    }
 
-		HashMap<Integer, String> table = new HashMap<>(countDistinctInOriginal);
+    public ArrayList<Row> getRows() {
+        return rows;
+    }
 
-		if (countDistinctInOriginal != 1) {
-
-			taversal(root, "", table);
-
-		} else {
-
-			table.put(root.getCharacter(), "0");
-		}
-
-		fillArrayList(table);
-
-		return table;
-
-	}
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-
-	/**
-	 * This method is used to fill ArrayList Object that will be used to fill
-	 * TableBiew In GUI .
-	 *
-	 * @param table module.huffmandemo.Huffman Table
-	 *
-	 */
-	private void fillArrayList(HashMap<Integer, String> table) {
-
-		HashNode<Integer, String>[] tableTemp = table.getHashTable();
-
-		for (int i = 0; i < table.sizeOfData(); i++) {
-
-			Character character = (char) tableTemp[i].getKey().intValue();
-			String code = tableTemp[i].getValue();
-			Integer length = code.length();
-			Integer frequency = count[tableTemp[i].getKey()];
-
-			Row row = new Row(character, code, length, frequency);
-
-			rows.add(row);
-
-		}
-
-	}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-	public int getNumberOfCharInOriginalFile() {
-		return numberOfCharInOriginalFile;
-	}
-
-
-
-	public StringBuilder getEncodedOfHeader() {
-		return encodedOfHeader;
-	}
-
-	public ArrayList<Row> getRows() {
-		return rows;
-	}
-
-	public String getExtensionOfOriginalFile() {
-		return "." + extensionOfOriginalFile;
-	}
+    public String getExtensionOfOriginalFile() {
+        return "." + extensionOfOriginalFile;
+    }
 
 }
